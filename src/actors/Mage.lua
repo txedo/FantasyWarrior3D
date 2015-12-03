@@ -89,8 +89,8 @@ do
         walk = createAnimation(file,99,119,0.7),
         attack1 = createAnimation(file,12,30,0.7),
         attack2 = createAnimation(file,31,49,0.7),
-        specialattack1 = createAnimation(file,56,74,0.2),
-        specialattack2 = createAnimation(file,75,92,0.2),
+        specialattack1 = createAnimation(file,56,74,1),
+        specialattack2 = createAnimation(file,75,92,1),
         defend = createAnimation(file,1,5,0.7),
         knocked = createAnimation(file,126,132,0.7),
         dead = createAnimation(file,139,199,0.7)
@@ -254,6 +254,7 @@ function Mage:hurt(collider, dirKnockMode)
         if self._name == "Rat" then
             blood:setPositionZ(G.winSize.height*0.25)
         end
+        blood:setCameraMask(UserCameraFlagMask)
         self:addEffect(blood)
         local bloodMinus = {_name = self._name, _maxhp= self._maxhp, _hp = self._hp, _bloodBar=self._bloodBar, _bloodBarClone=self._bloodBarClone,_avatar =self._avatar}
         MessageDispatchCenter:dispatchMessage(MessageDispatchCenter.MessageType.BLOOD_MINUS, bloodMinus)

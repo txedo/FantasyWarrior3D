@@ -10,7 +10,9 @@
 #include "spine/lua_cocos2dx_spine_manual.hpp"
 #include "3d/lua_cocos2dx_3d_manual.h"
 #include "audioengine/lua_cocos2dx_audioengine_manual.h"
-#include "lua_cocos2dx_custom.hpp"
+#include "physics3d/lua_cocos2dx_physics3d_manual.h"
+#include "navmesh/lua_cocos2dx_navmesh_manual.h"
+#include "custom/lua_cocos2dx_custom.hpp"
 
 int lua_module_register(lua_State* L)
 {
@@ -23,12 +25,14 @@ int lua_module_register(lua_State* L)
     register_extension_module(L);
     register_spine_module(L);
     register_cocos3d_module(L);
-    lua_getglobal(L, "_G");
-	register_all_cocos2dx_custom(L);
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	register_audioengine_module(L);
+    register_audioengine_module(L);
+    register_all_cocos2dx_custom(L);
+#if CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION
+    register_physics3d_module(L);
 #endif
-    lua_pop(L, 1);
+#if CC_USE_NAVMESH
+    register_navmesh_module(L);
+#endif
     return 1;
 }
 

@@ -51,7 +51,7 @@ function solveAttacks(dt)
 end
 
 BasicCollider = class("BasicCollider", function()
-    local node = cc.Node:create()
+    local node = cc.Sprite3D:create()
     node:setCascadeColorEnabled(true)
     return node
 end)
@@ -86,7 +86,8 @@ function BasicCollider:hurtEffect(target)
     hurtEffect:setScale(1.5)
     hurtEffect:runAction(cc.Sequence:create(hurtAction, cc.RemoveSelf:create()))
     hurtEffect:setPosition3D(cc.V3(0,0,50))
-    target:addChild(hurtEffect)  
+    hurtEffect:setCameraMask(UserCameraFlagMask)
+    target:addChild(hurtEffect)
 end
 
 function BasicCollider:onCollide(target)
@@ -124,6 +125,7 @@ function KnightNormalAttack.create(pos, facing, attackInfo, knight)
     local ret = KnightNormalAttack.new()
     ret:initData(pos,facing,attackInfo)
     ret.owner = knight
+    ret:setCameraMask(UserCameraFlagMask)
     return ret
 end
 
@@ -153,7 +155,7 @@ function MageNormalAttack.create(pos,facing,attackInfo, target, owner)
     smoke:setScale(2)
     ret:addChild(smoke)
     smoke:setRotation3D({x=90, y=0, z=0})
-    smoke:setGlobalZOrder(-ret:getPositionY()*2+FXZorder)
+    smoke:setGlobalZOrder(0)
     smoke:setPositionZ(50)
     
     local pixi = cc.ParticleSystemQuad:create(ParticleManager:getInstance():getPlistData("pixi"))
@@ -162,11 +164,12 @@ function MageNormalAttack.create(pos,facing,attackInfo, target, owner)
     pixi:setScale(2)
     ret:addChild(pixi)
     pixi:setRotation3D({x=90, y=0, z=0})
-    pixi:setGlobalZOrder(-ret:getPositionY()*2+FXZorder)
+    pixi:setGlobalZOrder(0)
     pixi:setPositionZ(50)
     
     ret.part1 = smoke
     ret.part2 = pixi
+    ret:setCameraMask(UserCameraFlagMask)
     return ret
 end
 
@@ -181,8 +184,9 @@ function MageNormalAttack:onTimeOut()
     magic:setScale(1.5)
     magic:setRotation3D({x=90, y=0, z=0})
     self:addChild(magic)
-    magic:setGlobalZOrder(-self:getPositionY()*2+FXZorder)
+    magic:setGlobalZOrder(0)
     magic:setPositionZ(0)
+    self:setCameraMask(UserCameraFlagMask)
     
     self.sp:setTextureRect(RECTS.iceSpike)
     self.sp:runAction(cc.FadeOut:create(1))
@@ -231,11 +235,12 @@ end
 function MageIceSpikes.create(pos, facing, attackInfo, owner)
     local ret = MageIceSpikes.new()
     ret:initData(pos,facing,attackInfo)
-    ret.sp = cc.Sprite:createWithSpriteFrameName("shadow.png")
+    ret.sp = cc.ShadowSprite:createWithSpriteFrameName("shadow.png")
     ret.sp:setGlobalZOrder(-ret:getPositionY()+FXZorder)
     ret.sp:setOpacity(100)
     ret.sp:setPosition3D(cc.V3(0,0,1))
     ret.sp:setScale(ret.maxRange/12)
+    ret.sp:setGlobalZOrder(-1)
     ret:addChild(ret.sp)
     ret.owner = owner
 
@@ -258,7 +263,7 @@ function MageIceSpikes.create(pos, facing, attackInfo, owner)
         spike:setOpacity(165)
         spike:setFlippedX(not(math.floor(math.random()*2)))
         spike:setPosition3D(cc.V3(math.random(-ret.maxRange/1.5, ret.maxRange/1.5),math.random(-ret.maxRange/1.5, ret.maxRange/1.5),1))
-        spike:setGlobalZOrder(-ret:getPositionY()-spike:getPositionY()+FXZorder)
+        spike:setGlobalZOrder(0)
         x:setScale(0)
         x:setPositionZ(-210)
     end
@@ -273,6 +278,7 @@ function MageIceSpikes.create(pos, facing, attackInfo, owner)
     ret:addChild(magic)
     magic:setGlobalZOrder(-ret:getPositionY()*2+FXZorder)
     magic:setPositionZ(0)
+    ret:setCameraMask(UserCameraFlagMask)
 
     
     return ret
@@ -298,6 +304,7 @@ function MageIceSpikes:onTimeOut()
     self:addChild(magic)
     magic:setGlobalZOrder(-self:getPositionY()+FXZorder)
     magic:setPositionZ(0)
+    self:setCameraMask(UserCameraFlagMask)
         
     self.sp:runAction(cc.FadeOut:create(1))
     self:runAction(cc.Sequence:create(cc.DelayTime:create(1),cc.RemoveSelf:create()))
@@ -339,6 +346,7 @@ function ArcherNormalAttack.create(pos,facing,attackInfo, owner)
     ret.sp = Archer:createArrow()
     ret.sp:setRotation(RADIANS_TO_DEGREES(-facing)-90)
     ret:addChild(ret.sp)
+    ret:setCameraMask(UserCameraFlagMask)
 
     return ret
 end
@@ -373,6 +381,7 @@ function ArcherSpecialAttack.create(pos,facing,attackInfo, owner)
     ret.sp = Archer:createArrow()
     ret.sp:setRotation(RADIANS_TO_DEGREES(-facing)-90)
     ret:addChild(ret.sp)
+    ret:setCameraMask(UserCameraFlagMask)
     
     return ret
 end
@@ -418,6 +427,7 @@ function Nova.create(pos, facing)
     ret.sp:setScale(0)
     ret.sp:runAction(cc.EaseCircleActionOut:create(cc.ScaleTo:create(0.3, 3)))
     ret.sp:runAction(cc.FadeOut:create(0.7))
+    ret:setCameraMask(UserCameraFlagMask)
     return ret
 end
 function Nova:onCollide(target)
@@ -453,6 +463,7 @@ function DragonAttack.create(pos,facing,attackInfo)
     ret.sp:setPosition3D(cc.V3(0,0,48))
     ret.sp:setScale(1.7)
     ret:addChild(ret.sp)
+    ret:setCameraMask(UserCameraFlagMask)
 
     return ret
 end
@@ -469,6 +480,7 @@ function DragonAttack:onTimeOut()
     magic:setGlobalZOrder(-self:getPositionY()*2+FXZorder)
     magic:setPositionZ(0)
     magic:setEndColor({r=1,g=0.5,b=0})
+    self:setCameraMask(UserCameraFlagMask)
 
     local fireballAction = cc.Animate:create(animationCache:getAnimation("fireBallAnim"))
     self.sp:runAction(fireballAction)
@@ -507,6 +519,7 @@ function BossNormal.create(pos,facing,attackInfo)
     ret.sp:setPosition3D(cc.V3(0,0,48))
     ret.sp:setScale(1.7)
     ret:addChild(ret.sp)
+    ret:setCameraMask(UserCameraFlagMask)
 
     return ret
 end
@@ -527,7 +540,8 @@ function BossNormal:onTimeOut()
     local fireballAction = cc.Animate:create(animationCache:getAnimation("fireBallAnim"))
     self.sp:runAction(fireballAction)
     self.sp:setScale(2)
-    
+    self:setCameraMask(UserCameraFlagMask)
+
     Nova.create(getPosTable(self), self._curFacing)
 end
 
@@ -558,6 +572,7 @@ function BossSuper.create(pos,facing,attackInfo)
     ret.sp:setPosition3D(cc.V3(0,0,48))
     ret.sp:setScale(1.7)
     ret:addChild(ret.sp)
+    ret:setCameraMask(UserCameraFlagMask)
 
     return ret
 end
@@ -578,6 +593,7 @@ function BossSuper:onTimeOut()
     local fireballAction = cc.Animate:create(animationCache:getAnimation("fireBallAnim"))
     self.sp:runAction(fireballAction)
     self.sp:setScale(2)
+    self:setCameraMask(UserCameraFlagMask)
 
     Nova.create(getPosTable(self), self._curFacing)
 end

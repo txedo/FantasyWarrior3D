@@ -28,7 +28,7 @@ end
 
 function Knight.create()
     local ret = Knight.new()    
-
+    ret:idleMode()
     ret._AIEnabled = true
     --this update function do not do AI
     function update(dt)
@@ -151,8 +151,8 @@ do
         walk = createAnimation(file,227,246,0.7),
         attack1 = createAnimation(file,103,129,0.7),
         attack2 = createAnimation(file,130,154,0.7),
-        specialattack1 = createAnimation(file,160,190,0.3),
-        specialattack2 = createAnimation(file,191,220,0.4),
+        specialattack1 = createAnimation(file,160,190,1),
+        specialattack2 = createAnimation(file,191,220,1),
         defend = createAnimation(file,92,96,0.7),
         knocked = createAnimation(file,254,260,0.7),
         dead = createAnimation(file,0,77,1)
@@ -293,6 +293,7 @@ function Knight:hurt(collider, dirKnockMode)
 
         --three param judge if crit
         local blood = self._hpCounter:showBloodLossNum(damage,self,critical)
+        blood:setCameraMask(UserCameraFlagMask)
         self:addEffect(blood)
         local bloodMinus = {_name = self._name, _maxhp= self._maxhp, _hp = self._hp, _bloodBar=self._bloodBar, _bloodBarClone=self._bloodBarClone,_avatar =self._avatar}
         MessageDispatchCenter:dispatchMessage(MessageDispatchCenter.MessageType.BLOOD_MINUS, bloodMinus)

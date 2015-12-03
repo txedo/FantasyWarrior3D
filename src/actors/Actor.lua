@@ -1,11 +1,12 @@
 require "Helper"
 require "AttackCommand"
+require "GlobalVariables"
 --type
 
 
 
 Actor = class ("Actor", function ()
-    local node = cc.Node:create()
+    local node = cc.Sprite3D:create()
     node:setCascadeColorEnabled(true)
 	return node
 end)
@@ -41,7 +42,7 @@ function Actor:initPuff()
     local puffFrame = cc.SpriteFrameCache:getInstance():getSpriteFrame("walkingPuff.png")
     puff:setTextureWithRect(puffFrame:getTexture(), puffFrame:getRect())
     puff:setScale(1.5)
-    puff:setGlobalZOrder(-self:getPositionY()+FXZorder)
+    puff:setGlobalZOrder(0)
     puff:setPositionZ(10)
     self._puff = puff
     self._effectNode:addChild(puff)
@@ -164,6 +165,7 @@ function Actor:hurt(collider, dirKnockMode)
         
         --three param judge if crit
         local blood = self._hpCounter:showBloodLossNum(damage,self,critical)
+        blood:setCameraMask(UserCameraFlagMask)
         self:addEffect(blood)
         return damage        
     end
